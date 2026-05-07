@@ -3,7 +3,7 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
-import threading # Para rodar a IA em paralelo
+import threading # roda a ia em paralelo
 import time
 
 class QRCodeApp:
@@ -12,7 +12,6 @@ class QRCodeApp:
         self.root.title("Leitor de QR Code Veloz (Otimizado)")
         self.root.geometry("1000x820")
 
-        # Inicializa o detector do WeChat
         try:
             self.detector = cv2.wechat_qrcode_WeChatQRCode()
         except Exception:
@@ -26,11 +25,11 @@ class QRCodeApp:
         self.webcam_running = False
         
         # --- Variáveis de Otimização (Velocidade) ---
-        self.current_frame = None # Frame atual colorido para exibição
-        self.data_detectada = "Nenhum" # Resultado da IA
-        self.pontos_detectados = None # Pontos da IA
-        self.processando_ia = False # Flag para não sobrecarregar
-        self.controle_fps_ia = 0 # Tempo para controlar a frequência da IA
+        self.current_frame = None 
+        self.data_detectada = "Nenhum" 
+        self.pontos_detectados = None 
+        self.processando_ia = False # flag para não sobrecarregar
+        self.controle_fps_ia = 0 # tempo para controlar a frequência da IA
 
         # --- Interface Gráfica ---
         tk.Label(root, text="Detecção Otimizada de QR Code", font=("Arial", 20, "bold")).pack(pady=15)
@@ -60,7 +59,6 @@ class QRCodeApp:
         escala = 640 / width
         frame_pequeno = cv2.resize(frame_original, None, fx=escala, fy=escala)
         
-        # Roda a IA do WeChat
         data, points = self.detector.detectAndDecode(frame_pequeno)
         
         if not data or not any(data):
@@ -72,45 +70,42 @@ class QRCodeApp:
         if data:
             for i, conteudo in enumerate(data):
                 if conteudo and len(conteudo.strip()) > 0:
-                    # Atualiza variáveis globais com o resultado
+
                     self.data_detectada = conteudo.strip()
                     
-                    # Ajusta os pontos de volta para o tamanho original
                     if points is not None and i < len(points):
                         self.pontos_detectados = points[i] / escala
                     break 
         else:
             self.pontos_detectados = None
 
-        self.processando_ia = False # Libera para a próxima detecção
+        self.processando_ia = False 
 
     def update_webcam(self):
         """Loop principal do vídeo (Roda a 30 FPS cravados)"""
         if self.webcam_running:
             ret, frame = self.cap.read()
             if ret:
-                # 1. Armazena o frame colorido original para exibição
+
                 self.current_frame = frame.copy()
                 
-                # 2. Controla a frequência da IA (ex: Roda a IA a cada 200ms = 5 vezes por segundo)
+                # controla a frequência da ia (ex: roda a ia a cada 200ms = 5 vezes por segundo)
                 tempo_atual = time.time()
                 if not self.processando_ia and (tempo_atual - self.controle_fps_ia > 0.20):
                     self.controle_fps_ia = tempo_atual
-                    # Cria e inicia uma Thread para a IA
+                    # cria e inicia uma Thread para a ia
                     t = threading.Thread(target=self.thread_ia_detecao, args=(frame.copy(),))
                     t.daemon = True # Morre se o programa principal fechar
                     t.start()
 
-                # 3. Desenha a marcação visual (Verde) se a IA achou algo
                 if self.pontos_detectados is not None:
                     pts = self.pontos_detectados.astype(np.int32)
                     cv2.polylines(self.current_frame, [pts], True, (0, 255, 0), 4)
                     self.result_var.set(f"Conteúdo:\n{self.data_detectada}")
 
-                # 4. Atualiza a tela (Tkinter)
                 self.render_to_panel(self.current_frame)
                 
-                # Agenda o próximo frame do VÍDEO rapidamente (10ms) para manter fluidez
+                # agenda o próximo frame do VÍDEO rapidamente (10ms) para manter fluidez
                 self.root.after(10, self.update_webcam)
             else:
                 self.stop_webcam()
@@ -121,7 +116,6 @@ class QRCodeApp:
         cv2_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img_pil = Image.fromarray(cv2_img)
         
-        # Redimensionamento rápido (thumbnail é mais rápido que resize completo)
         panel_width = self.panel.winfo_width()
         panel_height = self.panel.winfo_height()
         if panel_width > 10 and panel_height > 10:
@@ -133,10 +127,8 @@ class QRCodeApp:
 
     def toggle_webcam(self):
         if not self.webcam_running:
-            # CAP_DSHOW reduz o tempo de inicialização da câmera no Windows
             self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             
-            # Força uma resolução menor para a webcam se o delay persistir (ex: 720p)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
             
@@ -159,7 +151,6 @@ class QRCodeApp:
         if caminho:
             img = cv2.imread(caminho)
             if img is not None:
-                # Roda a IA no tamanho original para máxima precisão no upload
                 data, points = self.detector.detectAndDecode(img)
                 if data and data[0]:
                     conteudo = data[0].strip()
