@@ -5,6 +5,8 @@ from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
 import threading # roda a ia em paralelo
 import time
+import webbrowser
+from urllib.parse import urlparse
 
 class QRCodeApp:
     def __init__(self, root):
@@ -23,6 +25,7 @@ class QRCodeApp:
 
         self.cap = None
         self.webcam_running = False
+        self.link_atual = None
         
         # --- Variáveis de Otimização (Velocidade) ---
         self.current_frame = None 
@@ -36,9 +39,17 @@ class QRCodeApp:
         self.panel = tk.Label(root, bg="black", bd=2, relief="groove")
         self.panel.pack(pady=10, padx=15, fill="both", expand=True)
 
+        self.result_frame = tk.Frame(root)
+        self.result_frame.pack(pady=10, padx=10, fill="x")
+        self.result_frame.columnconfigure(0, weight=1)
+
         self.result_var = tk.StringVar(value="Conteúdo: Nenhum")
-        self.label_result = tk.Label(root, textvariable=self.result_var, font=("Arial", 13, "bold"), fg="darkblue", wraplength=900, justify="left")
-        self.label_result.pack(pady=10, padx=10)
+        self.label_result = tk.Label(self.result_frame, textvariable=self.result_var, font=("Arial", 13, "bold"), fg="darkblue", wraplength=760, justify="left", anchor="w")
+        self.label_result.grid(row=0, column=0, sticky="ew")
+
+        self.btn_abrir_link = tk.Button(self.result_frame, text="Abrir link", command=self.abrir_link, font=("Arial", 11), width=12)
+        self.btn_abrir_link.grid(row=0, column=1, padx=(10, 0))
+        self.btn_abrir_link.grid_remove()
 
         btn_frame = tk.Frame(root)
         btn_frame.pack(pady=20)
@@ -101,7 +112,7 @@ class QRCodeApp:
                 if self.pontos_detectados is not None:
                     pts = self.pontos_detectados.astype(np.int32)
                     cv2.polylines(self.current_frame, [pts], True, (0, 255, 0), 4)
-                    self.result_var.set(f"Conteúdo:\n{self.data_detectada}")
+                    self.atualizar_resultado(self.data_detectada)
 
                 self.render_to_panel(self.current_frame)
                 
@@ -111,6 +122,36 @@ class QRCodeApp:
                 self.stop_webcam()
 
     # --- Funções Auxiliares (Renderização e Hardware) ---
+    def extrair_link(self, conteudo):
+        texto = conteudo.strip()
+        url = urlparse(texto)
+        if url.scheme in ("http", "https") and url.netloc:
+            return texto
+
+        if not url.scheme and texto.lower().startswith("www."):
+            link = f"https://{texto}"
+            if urlparse(link).netloc:
+                return link
+
+        return None
+
+    def atualizar_resultado(self, conteudo):
+        self.result_var.set(f"Conteúdo:\n{conteudo}")
+        novo_link = self.extrair_link(conteudo)
+
+        if novo_link == self.link_atual:
+            return
+
+        self.link_atual = novo_link
+        if self.link_atual:
+            self.btn_abrir_link.grid()
+        else:
+            self.btn_abrir_link.grid_remove()
+
+    def abrir_link(self):
+        if self.link_atual:
+            webbrowser.open_new_tab(self.link_atual)
+
     def render_to_panel(self, frame):
         """Converte frame OpenCV para Tkinter mantendo proporção e velocidade"""
         cv2_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -154,12 +195,12 @@ class QRCodeApp:
                 data, points = self.detector.detectAndDecode(img)
                 if data and data[0]:
                     conteudo = data[0].strip()
-                    self.result_var.set(f"Conteúdo:\n{conteudo}")
+                    self.atualizar_resultado(conteudo)
                     if points is not None:
                         pts = points[0].astype(np.int32)
                         cv2.polylines(img, [pts], True, (0, 255, 0), 4)
                 else:
-                    self.result_var.set("Conteúdo: Nenhum QR Code detectado.")
+                    self.atualizar_resultado("Nenhum QR Code detectado.")
                 self.render_to_panel(img)
 
     def stop_webcam(self):
