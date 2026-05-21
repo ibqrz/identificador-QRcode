@@ -1,4 +1,4 @@
-# 🚀 Leitor de QR Code Veloz & Otimizado
+# 🚀 Leitor de QR Code 
 
 Uma aplicação desktop em Python desenvolvida para leitura de QR Codes em altíssima performance utilizando a webcam ou via upload de arquivos locais. O projeto combina uma interface gráfica fluida com o poderoso motor de Visão Computacional do WeChat integrado ao OpenCV.
 
@@ -33,7 +33,7 @@ Este projeto requer o módulo **Contrib** do OpenCV, que contém o algoritmo ava
 1. Clone o repositório ou baixe o arquivo do código:
    
 ```bash
-   git clone [https://github.com/ibqrz/identificador-QRcode.git](https://github.com/ibqrz/identificador-QRcode.git)
+   git clone https://github.com/ibqrz/identificador-QRcode.git
    cd identificador-qrcode
 ```
 
