@@ -33,7 +33,7 @@ Este projeto requer o módulo **Contrib** do OpenCV, que contém o algoritmo ava
 1. Clone o repositório ou baixe o arquivo do código:
    
 ```bash
-   git clone [https://github.com/ibqrz/identificador-QRcode.git](https://github.com/ibqrz/identificador-QRcode.git)
+   git clone https://github.com/ibqrz/identificador-QRcode.git
    cd identificador-qrcode
 ```
 
