@@ -52,6 +52,7 @@ python qrcode.py
 ```
 
 Como usar a aplicação:
+
 Via Webcam: Clique em "Iniciar Webcam". Aponte um QR Code para a câmera. O sistema detectará o código, desenhará um retângulo verde ao redor dele e exibirá o conteúdo. Se for um link, um botão "Abrir link" surgirá na tela.
 
 Via Arquivo: Clique em "Upload Imagem", selecione uma foto contendo um QR Code de seu computador (.jpg, .jpeg, .png) e o sistema fará a leitura instantânea.
