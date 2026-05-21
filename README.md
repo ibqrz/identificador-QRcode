@@ -48,7 +48,7 @@ Este projeto requer o módulo **Contrib** do OpenCV, que contém o algoritmo ava
 Com as dependências instaladas, basta iniciar o script principal do Python:
 
 ```bash
-python nome_do_seu_arquivo.py
+python qrcode.py
 ```
 
 Como usar a aplicação:
