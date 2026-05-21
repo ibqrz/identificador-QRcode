@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 class QRCodeApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Leitor de QR Code Veloz (Otimizado)")
+        self.root.title("Leitor de QR Code")
         self.root.geometry("1000x820")
 
         try:
@@ -35,7 +35,7 @@ class QRCodeApp:
         self.controle_fps_ia = 0 # tempo para controlar a frequência da IA
 
         # --- Interface Gráfica ---
-        tk.Label(root, text="Detecção Otimizada de QR Code", font=("Arial", 20, "bold")).pack(pady=15)
+        tk.Label(root, text="Detecção de QR Code", font=("Arial", 20, "bold")).pack(pady=15)
         self.panel = tk.Label(root, bg="black", bd=2, relief="groove")
         self.panel.pack(pady=10, padx=15, fill="both", expand=True)
 
