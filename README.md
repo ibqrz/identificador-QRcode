@@ -35,13 +35,13 @@ Este projeto requer o módulo **Contrib** do OpenCV, que contém o algoritmo ava
 ```bash
    git clone [https://github.com/ibqrz/identificador-QRcode.git](https://github.com/ibqrz/identificador-QRcode.git)
    cd identificador-qrcode
-```bash
+```
 
 2. Instale as dependências necessárias executando o comando abaixo no seu terminal:
 
 ```bash
    pip install opencv-contrib-python pillow numpy --user
-```bash
+```
 
 💻 Como Executar
 
@@ -49,7 +49,7 @@ Com as dependências instaladas, basta iniciar o script principal do Python:
 
 ```bash
 python nome_do_seu_arquivo.py
-```bash
+```
 
 Como usar a aplicação:
 Via Webcam: Clique em "Iniciar Webcam". Aponte um QR Code para a câmera. O sistema detectará o código, desenhará um retângulo verde ao redor dele e exibirá o conteúdo. Se for um link, um botão "Abrir link" surgirá na tela.
@@ -68,6 +68,6 @@ O fluxo interno do sistema funciona de maneira cíclica e segura:
                                         └──> Roda IA do WeChat
                                         └──> Se falhar, melhora contraste e tenta de novo
                                         └──> Retorna coordenadas e texto para a Tela Principal
-```bash
+```
 
 ⚠️ Fechamento Seguro: O aplicativo intercepta o fechamento da janela (WM_DELETE_WINDOW) para garantir que o hardware da webcam seja liberado da memória (self.cap.release()) antes de encerrar o programa, evitando bugs de câmera travada no sistema operacional.
